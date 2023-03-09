@@ -1,0 +1,3 @@
+start,end,expectedDistance,expectedPath
+0, 3, 6, 0 2 3
+0, 4, -1, NO PATH

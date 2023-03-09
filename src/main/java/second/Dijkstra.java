@@ -1,29 +1,43 @@
 package second;
 
+import java.util.Arrays;
 import java.util.PriorityQueue;
 
 public class Dijkstra {
-    public static int run(int start, int end, int[][] matrix) {
+    public static Result run(int start, int end, AdjacencyMatrix m) {
         PriorityQueue<Pair> heap = new PriorityQueue<>();
+        int[][] matrix = m.asArray();
+        int[] distances = new int[matrix.length];
+        boolean[] visited = new boolean[matrix.length];
+        int[] prev = new int[matrix.length];
+
         heap.add(new Pair(0, start));
-        int[] distances = new int[matrix.length-1];
+        Arrays.fill(distances, Integer.MAX_VALUE / 2);
+        Arrays.fill(visited, false);
+        Arrays.fill(prev, -1);
+        distances[start] = 0;
 
         while (!heap.isEmpty()) {
             Pair p = heap.poll();
-            if (distances[p.vertex] != 0) {
-                continue;
-            }
-            if (p.vertex != start) {
-                distances[p.vertex] = p.distance;
-            }
+            visited[p.vertex] = true;
 
             for (int i = 0; i < matrix.length; i++) {
-                if (distances[i] != 0) {
-                    continue;
+                if (matrix[p.vertex][i] != 0 && distances[i] > p.distance + matrix[p.vertex][i]) {
+                    distances[i] = p.distance + matrix[p.vertex][i];
+                    if (!visited[i]) {
+                        heap.add(new Pair(distances[i], i));
+                        prev[i] = p.vertex;
+                    }
                 }
-                heap.add(new Pair(p.distance + matrix[i][i], i));
             }
         }
-        return distances[end];
+        return new Result(distances[end], new StringBuilder(getPath(prev, end)).reverse().toString());
+    }
+
+    private static String getPath(int[] prev, int vertex) {
+        if (vertex == -1) {
+            return "";
+        }
+        return vertex + " " + getPath(prev, prev[vertex]);
     }
 }
