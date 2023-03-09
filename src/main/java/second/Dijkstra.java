@@ -4,7 +4,9 @@ import java.util.Arrays;
 import java.util.PriorityQueue;
 
 public class Dijkstra {
-    public static Result run(int start, int end, AdjacencyMatrix m) {
+    private static final int INF = Integer.MAX_VALUE / 2;
+
+    public static String run(int start, int end, AdjacencyMatrix m) {
         PriorityQueue<Pair> heap = new PriorityQueue<>();
         int[][] matrix = m.asArray();
         int[] distances = new int[matrix.length];
@@ -12,7 +14,7 @@ public class Dijkstra {
         int[] prev = new int[matrix.length];
 
         heap.add(new Pair(0, start));
-        Arrays.fill(distances, Integer.MAX_VALUE / 2);
+        Arrays.fill(distances, INF);
         Arrays.fill(visited, false);
         Arrays.fill(prev, -1);
         distances[start] = 0;
@@ -31,13 +33,16 @@ public class Dijkstra {
                 }
             }
         }
-        return new Result(distances[end], new StringBuilder(getPath(prev, end)).reverse().toString());
-    }
 
-    private static String getPath(int[] prev, int vertex) {
-        if (vertex == -1) {
-            return "";
+        if (distances[end] != INF) {
+            int curr = end;
+            StringBuilder builder = new StringBuilder();
+            while (curr != -1) {
+                builder.append(curr).append(" ");
+                curr = prev[curr];
+            }
+            return distances[end] + " : " + builder.reverse().toString().trim();
         }
-        return vertex + " " + getPath(prev, prev[vertex]);
+        return "NO PATH";
     }
 }
